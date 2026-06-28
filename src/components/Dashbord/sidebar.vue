@@ -1,4 +1,4 @@
-<script setup>
+<!-- <script setup>
 defineProps({
   region: {
     type: String,
@@ -9,49 +9,133 @@ defineProps({
     default: null,
   },
 })
+</script> -->
+
+<script setup>
+defineProps({
+  region: String,
+  weather: Object,
+  risk: String
+})
 </script>
 
 <template>
   <div class="weather-card">
+
     <div class="weather-card__hero">
-      <span class="weather-card__tag">OpenWeatherMap ready</span>
+
+      <span class="weather-card__tag">
+        {{ weather?.source }}
+      </span>
+
       <h3>{{ region }}</h3>
-      <!-- Valeurs temporaires: elles seront remplacees par les donnees OpenWeatherMap plus tard. -->
-      <p>{{ weather?.description || 'Donnees meteo bientot disponibles pour cette region.' }}</p>
+
+      <p>
+        {{ weather?.conditionFr }}
+      </p>
+
     </div>
 
     <div class="weather-card__temperature">
+
       <div>
-        <span>Temperature</span>
-        <strong>{{ weather?.temperature ?? '--' }}<small>deg C</small></strong>
+
+        <span>Température</span>
+
+        <strong>
+
+          {{ weather?.temp ?? "--" }}
+
+          <small>°C</small>
+
+        </strong>
+
+        <p>Ressenti {{ weather?.feelsLike ?? "--" }}°C</p>
+
       </div>
-      <div class="weather-card__icon" aria-hidden="true"></div>
+
+      <img
+        v-if="weather"
+        :src="weather.iconUrl"
+        :alt="weather.conditionFr"
+      >
+
     </div>
 
-    <!-- Structure prevue pour recevoir les indicateurs principaux de l'API meteo. -->
     <div class="weather-card__grid">
+
       <article>
-        <span>Humidite</span>
-        <strong>{{ weather?.humidity ?? '--' }}%</strong>
+
+        <span>Humidité</span>
+
+        <strong>{{ weather?.humidity }}%</strong>
+
       </article>
+
       <article>
+
         <span>Vent</span>
-        <strong>{{ weather?.windSpeed ?? '--' }} km/h</strong>
+
+        <strong>
+
+          {{ weather?.windSpeed }}
+
+          km/h
+
+          {{ weather?.windDirection }}
+
+        </strong>
+
       </article>
+
       <article>
-        <span>Pluie</span>
-        <strong>{{ weather?.rain ?? '--' }} mm</strong>
+
+        <span>Pression</span>
+
+        <strong>
+
+          {{ weather?.pressure }}
+
+          hPa
+
+        </strong>
+
       </article>
+
       <article>
+
+        <span>Visibilité</span>
+
+        <strong>
+
+          {{ weather?.visibility }}
+
+        </strong>
+
+      </article>
+
+      <article>
+
         <span>Risque</span>
-        <strong>{{ weather?.risk || 'A suivre' }}</strong>
-      </article>
+
+        <strong>{{ risk }}</strong>
+
+    </article>
+
     </div>
 
     <div class="weather-card__note">
-      <span>Statut</span>
-      <p>En attente de connexion a l'API. Cette carte est deja prete pour afficher les futures donnees.</p>
+
+      <span>Mise à jour</span>
+
+      <p>
+
+        {{ weather?.updatedAt }}
+
+      </p>
+
     </div>
+
   </div>
 </template>
 

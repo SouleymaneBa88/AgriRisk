@@ -1,5 +1,5 @@
 <script setup>
-import Sidebar from '@/components/Dashbord/sidebar.vue'
+import Sidebar from '@/components/dashbord/sidebar.vue'
 
 defineProps({
   region: {
@@ -14,6 +14,10 @@ defineProps({
     type: Object,
     default: null,
   },
+  risk: {
+    type: String,
+    default: ''
+  }
 })
 
 const emit = defineEmits(['close'])
@@ -33,7 +37,7 @@ const emit = defineEmits(['close'])
 
     <!-- Ce bloc centralise les informations affichees apres un clic sur une region de la carte. -->
     <section v-if="region" class="cart-affiche__content">
-      <Sidebar :region="region" :weather="weather" />
+      <Sidebar :region="region" :weather="weather" :risk="risk" />
     </section>
 
     <p v-else class="cart-affiche__empty">Cliquez sur une region de la carte pour afficher ses details.</p>

@@ -1,0 +1,16 @@
+export const SVG_LABELS = {
+  'SNKE': { cx: 813, cy: 626 },
+  'SNTC': { cx: 703, cy: 455 },
+  'SNKD': { cx: 472, cy: 595 },
+  'SNSE': { cx: 324, cy: 595 },
+  'SNZG': { cx: 228, cy: 614 },
+  'SNSL': { cx: 440, cy: 90 },
+  'SNMT': { cx: 602, cy: 269 },
+  'SNKA': { cx: 390, cy: 415 },
+  'SNKL': { cx: 274, cy: 467 },
+  'SNFK': { cx: 212, cy: 381 },
+  'SNLG': { cx: 354, cy: 231 },
+  'SNTH': { cx: 141, cy: 333 },
+  'SNDK': { cx: 88, cy: 325 },
+  'SNDB': { cx: 269, cy: 329 },
+}

@@ -1,15 +1,29 @@
 <script setup>
-import CartAffiche from '@/components/Dashbord/CartAffiche.vue';
-import SenegalMap from '@/components/Map/SenegalMap.vue';
-import { ref } from 'vue';
+import { ref } from 'vue'
 
-const selectRegion = ref('Dakar')
-const isCartAfficheOpen = ref(true)
+import CartAffiche from '@/components/dashbord/CartAffiche.vue'
+import SenegalMap from '@/components/Map/SenegalMap.vue'
 
-function recuperationEmit(region) {
-  // Ouvre le panneau lateral droit avec la region recue depuis le composant carte.
-  selectRegion.value = region
-  isCartAfficheOpen.value = true
+import { useClimat } from '@/services/useClimat'
+
+const isCartAfficheOpen = ref(false)
+
+const {
+  selectedRegion,
+  selectedRegionId,
+  weather,
+  risk,
+  selectRegion,
+} = useClimat()
+
+async function recuperationEmit(regionId) {
+  try {
+    isCartAfficheOpen.value = true
+
+    await selectRegion(regionId)
+  } catch (error) {
+    console.error(error)
+  }
 }
 
 function closeCartAffiche() {
@@ -20,11 +34,17 @@ function closeCartAffiche() {
 <template>
   <main class="dashboard">
     <section class="dashboard__map">
-      <SenegalMap :selected-region="selectRegion" @selection-region="recuperationEmit" />
+      <SenegalMap :selected-region="selectedRegionId" @region-select="recuperationEmit" />
     </section>
 
     <!-- CartAffiche se comporte comme un sidebar droit et s'affiche apres un clic sur la carte. -->
-    <CartAffiche :region="selectRegion" :visible="isCartAfficheOpen" @close="closeCartAffiche" />
+    <CartAffiche
+      :region="selectedRegion?.name"
+      :weather="weather"
+      :risk="risk"
+      :visible="isCartAfficheOpen"
+      @close="closeCartAffiche"
+    />
   </main>
 </template>
 
