@@ -1,7 +1,7 @@
 <script setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 
-import CartAffiche from '@/components/dashbord/CartAffiche.vue'
+import CartAffiche from '@/components/Dashbord/CartAffiche.vue'
 import SenegalMap from '@/components/Map/SenegalMap.vue'
 
 import { useClimat } from '@/services/useClimat'
@@ -14,7 +14,18 @@ const {
   weather,
   risk,
   selectRegion,
+  loadDefaultWeather,
 } = useClimat()
+
+onMounted(async () => {
+  isCartAfficheOpen.value = true
+
+  try {
+    await loadDefaultWeather()
+  } catch (error) {
+    console.error(error)
+  }
+})
 
 async function recuperationEmit(regionId) {
   try {

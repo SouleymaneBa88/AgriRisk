@@ -31,7 +31,8 @@ export async function fetchWeatherByRegion(region, signal) {
   const apiKey = getOpenWeatherApiKey()
   const url = new URL(OPENWEATHER_BASE_URL)
 
-  url.searchParams.set('q', `${region.name},SN`)
+  url.searchParams.set('lat', region.lat)
+  url.searchParams.set('lon', region.lon)
   url.searchParams.set('units', 'metric')
   url.searchParams.set('lang', 'fr')
   url.searchParams.set('appid', apiKey)
