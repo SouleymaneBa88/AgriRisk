@@ -7,6 +7,10 @@ const SENEGAL_BOUNDS = {
   maxLon: -11.3,
 }
 
+/**
+ * Vérifie si des coordonnées GPS se trouvent dans l'enveloppe géographique
+ * approximative du Sénégal.
+ */
 export function isInsideSenegal(lat, lon) {
   return (
     Number.isFinite(lat) &&
@@ -18,6 +22,11 @@ export function isInsideSenegal(lat, lon) {
   )
 }
 
+/**
+ * Trouve l'identifiant de la région connue la plus proche des coordonnées.
+ *
+ * @returns {string|null} Identifiant de région ou null si la position est hors Sénégal.
+ */
 export function getRegionIdFromCoordinates(lat, lon) {
   if (!isInsideSenegal(lat, lon)) {
     return null
@@ -38,16 +47,26 @@ export function getRegionIdFromCoordinates(lat, lon) {
   return nearestRegion?.id || null
 }
 
+/**
+ * Renvoie le code administratif de la région la plus proche des coordonnées.
+ */
 export function getRegionCodeFromCoordinates(lat, lon) {
   const region = getRegionFromCoordinates(lat, lon)
   return region?.code || null
 }
 
+/**
+ * Renvoie l'objet région correspondant aux coordonnées GPS.
+ */
 export function getRegionFromCoordinates(lat, lon) {
   const regionId = getRegionIdFromCoordinates(lat, lon)
   return regionId ? getRegionById(regionId) : null
 }
 
+/**
+ * Calcule la distance en kilomètres entre deux points GPS avec la formule
+ * de Haversine.
+ */
 function haversineDistance(lat1, lon1, lat2, lon2) {
   const radius = 6371
   const toRadians = (value) => (value * Math.PI) / 180

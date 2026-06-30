@@ -1,5 +1,5 @@
 import { computed, watch } from 'vue'
-import { fetchWeatherByRegion, getMessageErreurMeteo } from '@/services/climatService'
+import { fetchForecastByRegion, fetchWeatherByRegion, getMessageErreurMeteo } from '@/services/climatService'
 import { getRegionFromPosition } from '@/services/geolocalisationService'
 // import { getRecommendations } from '@/services/recommendationLLM'
 import {
@@ -24,6 +24,11 @@ const fallbackMessages = {
   timeout:             'Délai de géolocalisation dépassé : Dakar chargé par défaut.',
 }
 
+/**
+ * Composable principal du dashboard climat.
+ * Il expose l'état météo sous forme de computed et centralise les actions
+ * de sélection de région, chargement par défaut et géolocalisation.
+ */
 export function useClimat() {
   const state = getClimatState()
   // const alertStore = useAlertStore()
@@ -35,6 +40,7 @@ export function useClimat() {
 
   const selectedRegion        = computed(() => state.region)
   const weather               = computed(() => state.weather)
+  const forecast              = computed(() => state.forecast)
   const loading               = computed(() => state.loading)
   const error                 = computed(() => state.error)
   const risk                  = computed(() => state.risk)
@@ -66,15 +72,21 @@ export function useClimat() {
     error.value ? getMessageErreurMeteo(error.value) : null
   )
 
+  /**
+   * Sélectionne une région, charge sa météo et met à jour le store climat.
+   */
   async function selectRegion(regionId) {
     try {
       setSelectedRegion(regionId)
       setWeatherLoading()
 
-      const nextWeather = await fetchWeatherByRegion(state.region)
+      const [nextWeather, nextForecast] = await Promise.all([
+        fetchWeatherByRegion(state.region),
+        fetchForecastByRegion(state.region),
+      ])
 
       // 1. Calcul météo + risque (setWeatherSuccess appelle calculateRiskLLM)
-      await setWeatherSuccess(nextWeather, 'manuel')
+      await setWeatherSuccess(nextWeather, nextForecast, 'manuel')
 
       // 2. Génération des recommandations basées sur le risque calculé
       //    Lancée en parallèle de l'affichage du dashboard (non bloquante)
@@ -94,10 +106,17 @@ export function useClimat() {
     }
   }
 
+  /**
+   * Charge la météo de la région configurée comme valeur par défaut.
+   */
   async function loadDefaultWeather() {
     await selectRegion(DEFAULT_REGION_ID)
   }
 
+  /**
+   * Tente de charger la météo depuis la position GPS de l'utilisateur.
+   * En cas d'échec géré, le service de géolocalisation renvoie Dakar en fallback.
+   */
   async function useMyPosition() {
     try {
       state.loading = true
@@ -119,6 +138,7 @@ export function useClimat() {
     selectedRegionId,
     selectedRegion,
     weather,
+    forecast,
     risk,
     // recommandations,         // ← nouveau
     // recommandationsLoading,  // ← nouveau

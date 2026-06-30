@@ -1,6 +1,10 @@
 import { getRegionById } from '@/data/regions'
 import { getRegionIdFromCoordinates } from './regionMapper'
 
+/**
+ * Erreur métier utilisée pour normaliser les différents retours de l'API
+ * Geolocation du navigateur.
+ */
 export class ErreurGeolocalisation extends Error {
   constructor(message, code, details = null) {
     super(message)
@@ -10,6 +14,15 @@ export class ErreurGeolocalisation extends Error {
   }
 }
 
+/**
+ * Récupère la position de l'utilisateur puis l'associe à une région du Sénégal.
+ * Si la position est refusée, indisponible ou hors Sénégal, une région de repli
+ * est retournée pour permettre au dashboard de rester utilisable.
+ *
+ * @param {object} options Options de géolocalisation.
+ * @param {string} [options.fallbackRegionId='SNDK'] Région utilisée en cas d'échec.
+ * @returns {Promise<{region: object, source: string, reason?: string, error?: Error}>}
+ */
 export async function getRegionFromPosition({ fallbackRegionId = 'SNDK' } = {}) {
   try {
     const position = await getPositionActuelle()
@@ -44,6 +57,12 @@ export async function getRegionFromPosition({ fallbackRegionId = 'SNDK' } = {}) 
   }
 }
 
+/**
+ * Enveloppe navigator.geolocation.getCurrentPosition dans une Promise.
+ *
+ * @returns {Promise<GeolocationPosition>} Position navigateur actuelle.
+ * @throws {ErreurGeolocalisation} Si le navigateur ne supporte pas la géolocalisation.
+ */
 export async function getPositionActuelle() {
   if (!navigator.geolocation) {
     throw new ErreurGeolocalisation(
@@ -67,6 +86,9 @@ export async function getPositionActuelle() {
   })
 }
 
+/**
+ * Transforme une erreur de géolocalisation en texte court pour l'interface.
+ */
 export function getMessageErreurGeolocalisation(error) {
   switch (error?.code) {
     case 'permission_denied':
@@ -82,6 +104,10 @@ export function getMessageErreurGeolocalisation(error) {
   }
 }
 
+/**
+ * Vérifie en amont si l'utilisateur a déjà refusé la géolocalisation.
+ * Cette fonction est disponible si l'on veut éviter d'ouvrir le prompt navigateur.
+ */
 async function refuserSiPermissionRefusee() {
   if (!navigator.permissions?.query) {
     return
@@ -103,6 +129,9 @@ async function refuserSiPermissionRefusee() {
   }
 }
 
+/**
+ * Convertit les codes natifs GeolocationPositionError en ErreurGeolocalisation.
+ */
 function creerErreurGeolocalisation(error) {
   if (error.code === error.PERMISSION_DENIED) {
     return new ErreurGeolocalisation(

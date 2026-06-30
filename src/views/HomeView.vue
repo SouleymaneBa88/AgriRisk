@@ -12,6 +12,7 @@ const {
   selectedRegion,
   selectedRegionId,
   weather,
+  forecast,
   risk,
   selectRegion,
   loadDefaultWeather,
@@ -52,6 +53,7 @@ function closeCartAffiche() {
     <CartAffiche
       :region="selectedRegion?.name"
       :weather="weather"
+      :forecast="forecast"
       :risk="risk"
       :visible="isCartAfficheOpen"
       @close="closeCartAffiche"
